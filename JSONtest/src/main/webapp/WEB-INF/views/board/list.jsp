@@ -50,15 +50,38 @@
 	</c:if>
 	
 	<ul class="pagination">
-		<li<c:if test="${!page.hasPreviousBlock}"> class="disabled"</c:if>><a href="/board?page=${page.currentPage - page.blockSize}">&laquo;</a></li>
-		<li<c:if test="${!page.hasPreviousPage}"> class="disabled"</c:if>><a href="/board?page=${page.currentPage - 1}">&lsaquo;</a></li>
-		
+		<c:if test="${!page.hasPreviousBlock}">
+		<li class="disabled"><a>&laquo;</a></li>
+		</c:if>
+		<c:if test="${page.hasPreviousBlock}">
+		<li><a href="/board?page=${page.currentPage - page.blockSize}">&laquo;</a></li>
+		</c:if>
+		<c:if test="${!page.hasPreviousPage}">
+		<li class="disabled"><a>&lsaquo;</a></li>
+		</c:if>
+		<c:if test="${page.hasPreviousPage}">
+		<li><a href="/board?page=${page.currentPage - 1}">&lsaquo;</a></li>
+		</c:if>
 		<c:forEach begin="${page.firstPageOfCurrentBlock}" end="${page.lastPageOfCurrentBlock}" varStatus="loop">
-		<li<c:if test="${loop.index == page.currentPage}"> class="active"</c:if>><a href="/board?page=${loop.index}">${loop.index}<c:if test="${loop.index == page.currentPage}"> <span class="sr-only">(current)</span></c:if></a></li>
+		<c:if test="${loop.index == page.currentPage}">
+		<li class="active"><a href="/board?page=${loop.index}">${loop.index} <span class="sr-only">(current)</span></a></li>
+		</c:if>
+		<c:if test="${loop.index != page.currentPage}">
+		<li><a href="/board?page=${loop.index}">${loop.index}</a></li>
+		</c:if>
 		</c:forEach>  
-		
-		<li<c:if test="${!page.hasNextPage}"> class="disabled"</c:if>><a href="/board?page=${page.currentPage + 1}">&rsaquo;</a></li>
-		<li<c:if test="${!page.hasNextBlock}"> class="disabled"</c:if>><a href="/board?page=${page.currentPage + page.blockSize}">&raquo;</a></li>
+		<c:if test="${!page.hasNextPage}">
+		<li class="disabled"><a>&rsaquo;</a></li>
+		</c:if>
+		<c:if test="${page.hasNextPage}">
+		<li><a href="/board?page=${page.currentPage + 1}">&rsaquo;</a></li>
+		</c:if>
+		<c:if test="${!page.hasNextBlock}">
+		<li class="disabled"><a>&raquo;</a></li>
+		</c:if>
+		<c:if test="${page.hasNextBlock}">
+		<li><a href="/board?page=${page.currentPage + page.blockSize}">&raquo;</a></li>
+		</c:if>
 	</ul>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
