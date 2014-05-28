@@ -17,41 +17,48 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/board")
 public class BoardController {
 
-    @RequestMapping(value = "/board", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
 	public String list(@RequestParam(required = false, defaultValue = "1") Integer page, Model model) {
     	if (page == null) {
     		page = 1;
     	}
     	
-	    List<Board> result = new ArrayList<Board>();
-	    List<Board> data = new ArrayList<Board>();
-	    
-	    int totalRow = 301;
+	    int totalRow = 301; // 총 갯수
 	    int pageSize = 10;
 	    
-	    /* mock data */
-	    for(int i = 0; i < totalRow; i++) {
+	    Page p = new Page(totalRow, page);
+	    p.setPageSize(pageSize);
+	    
+	    List<Board> data = getBoardListMockData(p);
+	    
+	    model.addAttribute("data", data);
+	    model.addAttribute("page", p);
+	    return "board/list";
+    }
+
+	private List<Board> getBoardListMockData(Page p) {
+		List<Board> result = new ArrayList<Board>();
+	    List<Board> data = new ArrayList<Board>();
+	    
+	    for(int i = 0; i < p.getTotalRow(); i++) {
 	    	Board board = new Board();
 	    	board.setBoard("name" + i, "title" + i);
 	    	result.add(board);
 	    }
 	    
-	    page = Math.min(Math.max(page, 1), (totalRow - 1) / pageSize + 1);
+	    int firstRow = p.getFirstRow();
+	    int lastRow = p.getLastRow();
 	    
-	    int firstIndex = (page - 1) * pageSize; 
-	    int lastIndex = page * pageSize < totalRow ? page * pageSize : totalRow;
-	    if (firstIndex >= 0 && firstIndex <= lastIndex) {
-	    	data = result.subList(firstIndex, lastIndex);
+	    if (firstRow >= 0 && firstRow <= lastRow) {
+	    	data = result.subList(firstRow, lastRow);
 	    }
-	    
-	    model.addAttribute("data", data);
-	    model.addAttribute("page", new Page(totalRow, page));
-	    return "board/list";
-    }
+		return data;
+	}
     
-    @RequestMapping(value = "/board/page/{currentPage}", method = RequestMethod.GET)
+    @RequestMapping(value = "/page/{currentPage}", method = RequestMethod.GET)
 	public void getPage(@PathVariable Integer currentPage, Model model) {
     	model.addAttribute("page", new Page(301, currentPage));
     }
@@ -61,26 +68,14 @@ public class BoardController {
 	    return "board/view";
     }
     
-//    @RequestMapping(method = RequestMethod.GET, value = "/board/{id}.json")
-//    public ResponseEntity<Board> viewJson(@PathVariable String id) {
-//	    Board board = new Board();
-//	    board.setBoard("kim", "test1");
-//	    
-//        if (id.equals("1")) {
-//            return new ResponseEntity<Board>(HttpStatus.NOT_FOUND);
-//        }
-//
-//        return new ResponseEntity<Board>(board, HttpStatus.OK);
-//    }
-    
-	@RequestMapping("/board/form")
+	@RequestMapping("/form")
 	public void form(Model model, RedirectAttributes attr){
 	    if (!model.containsAttribute("board")) {
 	        model.addAttribute("board", new Board());
 	    }
 	}
 	
-	@RequestMapping(value = "/board", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public String create(@Valid Board board, BindingResult result, SessionStatus status, RedirectAttributes attr){
 		if(result.hasErrors()) {
 		    attr.addFlashAttribute("org.springframework.validation.BindingResult.board", result);

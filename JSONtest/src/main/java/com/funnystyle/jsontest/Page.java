@@ -11,9 +11,11 @@ public class Page {
 	
 	/* option */
 	private int pageSize = 10; // row size of 1 page
-	private int blockSize = 6;
+	private int blockSize = 10;
 
 	/* readonly */
+	private int firstRow = 1;
+	private int lastRow = 1;
 	private int totalPage = 0; 
 	private int currentBlock = 1;
 	private int totalBlock = 1;
@@ -35,8 +37,10 @@ public class Page {
 
 	private void setPage() {
 		totalPage = (totalRow - 1) / pageSize + 1;
-
 		currentPage = Math.min(Math.max(1, currentPage), totalPage);
+
+		firstRow = (currentPage - 1) * pageSize; 
+	    lastRow = Math.min(firstRow + pageSize - 1, totalRow);
 		
 		currentBlock = (currentPage - 1) / blockSize + 1;
 		totalBlock = (totalPage - 1) / blockSize + 1;
@@ -89,6 +93,14 @@ public class Page {
 		setPage();
 	}
 
+	public int getFirstRow() {
+		return firstRow;
+	}
+	
+	public int getLastRow() {
+		return lastRow;
+	}
+	
 	public int getTotalPage() {
 		return totalPage;
 	}
