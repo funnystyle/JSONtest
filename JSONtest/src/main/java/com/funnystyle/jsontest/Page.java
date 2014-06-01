@@ -29,9 +29,16 @@ public class Page {
 	private boolean hasPreviousBlock;
 	private boolean hasNextBlock;
 
-	Page(int totalRow, int currentPage) {
+	public Page(int totalRow, int currentPage) {
 		this.totalRow = totalRow;
 		this.currentPage = currentPage;
+		setPage();
+	}
+
+	public Page(int totalRow, int currentPage, int pageSize) {
+		this.totalRow = totalRow;
+		this.currentPage = currentPage;
+		this.pageSize = pageSize;
 		setPage();
 	}
 
@@ -143,5 +150,9 @@ public class Page {
 
 	public boolean isHasNextBlock() {
 		return hasNextBlock;
+	}
+	
+    public boolean isValidPage(int page) {
+		return page >= 1 && page <= totalPage;
 	}
 }

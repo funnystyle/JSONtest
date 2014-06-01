@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -21,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BoardController {
 
     @RequestMapping(method = RequestMethod.GET)
-	public String list(@RequestParam(required = false, defaultValue = "1") Integer page, Model model) {
+	public String list(@RequestParam(required = false, defaultValue = "1") Integer page, Model model) throws Exception {
     	if (page == null) {
     		page = 1;
     	}
@@ -29,8 +28,11 @@ public class BoardController {
 	    int totalRow = 301; // 총 갯수
 	    int pageSize = 10;
 	    
-	    Page p = new Page(totalRow, page);
-	    p.setPageSize(pageSize);
+	    Page p = new Page(totalRow, page, pageSize);
+	    
+	    if (!p.isValidPage(page)) { // page not found
+	    	throw new NotFoundException("page : " + page);
+	    }
 	    
 	    List<Board> data = getBoardListMockData(p);
 	    
@@ -39,26 +41,7 @@ public class BoardController {
 	    return "board/list";
     }
 
-	private List<Board> getBoardListMockData(Page p) {
-		List<Board> result = new ArrayList<Board>();
-	    List<Board> data = new ArrayList<Board>();
-	    
-	    for(int i = 0; i < p.getTotalRow(); i++) {
-	    	Board board = new Board();
-	    	board.setBoard("name" + i, "title" + i);
-	    	result.add(board);
-	    }
-	    
-	    int firstRow = p.getFirstRow();
-	    int lastRow = p.getLastRow();
-	    
-	    if (firstRow >= 0 && firstRow <= lastRow) {
-	    	data = result.subList(firstRow, lastRow);
-	    }
-		return data;
-	}
-    
-    @RequestMapping(value = "/page/{currentPage}", method = RequestMethod.GET)
+	@RequestMapping(value = "/page/{currentPage}", method = RequestMethod.GET)
 	public void getPage(@PathVariable Integer currentPage, Model model) {
     	model.addAttribute("page", new Page(301, currentPage));
     }
@@ -87,4 +70,23 @@ public class BoardController {
 		status.setComplete();
 		return "redirect:/board/" + id;
 	}   
+
+	private List<Board> getBoardListMockData(Page p) {
+		List<Board> result = new ArrayList<Board>();
+	    List<Board> data = new ArrayList<Board>();
+	    
+	    for(int i = 0; i < p.getTotalRow(); i++) {
+	    	Board board = new Board();
+	    	board.setBoard("name" + i, "title" + i);
+	    	result.add(board);
+	    }
+	    
+	    int firstRow = p.getFirstRow();
+	    int lastRow = p.getLastRow();
+	    
+	    if (firstRow >= 0 && firstRow <= lastRow) {
+	    	data = result.subList(firstRow, lastRow);
+	    }
+		return data;
+	}
 }

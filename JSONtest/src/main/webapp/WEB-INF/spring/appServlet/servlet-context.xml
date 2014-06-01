@@ -36,8 +36,7 @@
 				<!-- Json View -->
 				<beans:bean id="jsonView"
 					class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
-					<beans:property name="contentType"
-						value="application/json;charset=UTF-8" />
+					<beans:property name="contentType" value="application/json;charset=UTF-8" />
 				</beans:bean>
 			</beans:list>
 		</beans:property>
@@ -49,8 +48,6 @@
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
-	
-
 	
 	<context:component-scan base-package="com.funnystyle.jsontest" />
 </beans:beans>
